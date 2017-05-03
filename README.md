@@ -15,6 +15,7 @@ The DSL syntax includes:
 - `(tag attrs)` matches a tag with a certain set of attributes
 - `>>` does a DFS search in the current DOM subtree
 - `$` specifies a part that should be saved in the resulting hash-table
+- `!!!` signals a complete match and allows to continue matching to find more than 1 instance
 
 A simple example: `(>>> table (tr (th) ((td :class "cell") ($ data)))` will match a table with a a row in which there will be a TH and TD of the class "cell" and all of the TD's contents will be saved to the key "data" in the result hash-table.
 

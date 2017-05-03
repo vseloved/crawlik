@@ -66,7 +66,7 @@
                               (apply #'match-expr expr))
                       (:= *tree* saved)
                       (return))))
-                     :finally (return t)))))))
+                 :finally (return t)))))))
 
 (defmethod match-expr ((head list) &rest tail)
   "Match with attributes: ((tag &rest attrs) &rest content)."
