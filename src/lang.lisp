@@ -7,6 +7,7 @@
 
 (defvar *tree*)
 (defvar *vars*)
+(defvar *match-multiple*)
 
 (define-condition html-matched () ())
 (define-condition finish-matching () ())
@@ -14,13 +15,18 @@
 (define-symbol-macro !!!
     (progn (signal 'html-matched) t))
 
-(defun match-html (source expr)
+(defun match-html (tree expr &key multiple)
+  "Main processing function that matches a parsed html TREE
+   according to the expression EXPR.
+   If successful, returns a list of hash-tables representing the matched vars.
+   If MULTIPLE flag is set, returns var valus for all the possible matches."
   (:= expr (maptree ^(if (symbolp %)
                          (mkeyw %)
                          %)
                     expr))
-  (let ((*tree* source)
+  (let ((*tree* tree)
         (*vars* #h())
+        (*match-multiple* multiple)
         matched)
     (block nil
       (handler-bind ((html-matched ^(push (copy-hash-table *vars*) matched))
@@ -29,7 +35,7 @@
         (do ()
             ((null *tree*))
           (when (apply #'match-expr expr)
-            !!!
+            (unless matched (push *vars* matched))
             (return)))))
     matched))
 
@@ -77,7 +83,7 @@
        (apply #'match-expr (first head) tail)))
 
 (defmethod match-expr ((head (eql :$)) &rest tail)
-  "Match variables: ($ name &optional expr)."
+  "Match variable: ($ name &optional expr)."
   (when (or (single tail)
             (let ((*tree* *tree*))
               (apply #'match-expr (rest tail))))
@@ -86,20 +92,29 @@
     t))
 
 (defmethod match-expr ((head (eql :$!)) &rest tail)
+  "Match varaible and finish matching at once."
   (and (apply #'match-expr :$ tail)
        !!!
        (signal 'finish-matching)))
 
 (defmethod match-expr ((head (eql :>>)) &rest tail)
   "Match by tree depth-first search: (>> tag &rest contents)."
-  ;; (print (first *tree*)) (break)
-  (or (apply #'match-expr tail)
+  (or (when (apply #'match-expr tail)
+        !!!)
       (when (listp *tree*)
-        (dolist (*tree* (rest *tree*))
-          (when (apply #'match-expr :>> tail)
-            (return t))))
+        (let (matched)
+          (dolist (*tree* (rest *tree*) matched)
+            (when (apply #'match-expr :>> tail)
+              (if *match-multiple*
+                  (:= matched t)
+                  (return t))))))
       (rutil:void *tree*)))
 
+(defmethod match-expr ((head (eql :?)) &rest tail)
+  "Optional match: (? &rest expr)."
+  (or (apply #'match-expr tail)
+      t))
+  
 (defun match-attrs (attr-exprs)
   "Match current tree tag attributes against ATTR-EXPRS."
   (every #'true
@@ -125,4 +140,3 @@
   (should be true (let ((*tree* '(:doc (:html)))) (match-expr '>> html)))
   (should be true (let ((*tree* '(:doc (:fake (:html))))) (match-expr '>> html)))
   (should be null (let ((*tree* '(:doc))) (match-expr '>> 'html))))
-
