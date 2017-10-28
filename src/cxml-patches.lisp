@@ -6,20 +6,23 @@
 (defparameter *html5-ztags* '(:area :base :br :col :embed :hr :img :input
                               :keygen :link :meta :param :source :track :wbr))
 
-(defstruct (context (:conc-name nil))
-  handler
-  (dtd nil)
-  model-stack
-  base-stack
-  tag-stack
-  (referenced-notations '())
-  (id-table (make-rod-hashtable))
-  (name-hashtable (make-rod-hashtable :size 2000))
-  (standalone-p nil)
-  (entity-resolver nil)
-  (disallow-internal-subset nil)
-  main-zstream
-  skip-end-tags)
+(handler-bind (#+sbcl (simple-error (lambda (e)
+                                      (invoke-restart
+                                       'sb-kernel::recklessly-continue))))
+  (defstruct (context (:conc-name nil))
+    handler
+    (dtd nil)
+    model-stack
+    base-stack
+    tag-stack
+    (referenced-notations '())
+    (id-table (make-rod-hashtable))
+    (name-hashtable (make-rod-hashtable :size 2000))
+    (standalone-p nil)
+    (entity-resolver nil)
+    (disallow-internal-subset nil)
+    main-zstream
+    skip-end-tags))
 
 (defun find-namespace-binding (prefix)
   (cdr (or (assoc (or prefix #"") *namespace-bindings* :test #'rod=)

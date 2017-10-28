@@ -10,7 +10,7 @@
   :description
   "A declarative crawler."
   :depends-on (#:rutilsx #:drakma #:cl-ppcre #:cxml #:eager-future2
-                         #+dev #:should-test)
+               #+dev #:should-test)
   :components
   ((:module #:src
     :serial t
