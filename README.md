@@ -7,7 +7,7 @@ To use `crawlik`, you, basically, need to define methods:
 
 ## CRAWLIK DSL
 
-Scraing data from the web page may be performed in arbitrary manner, yet `crawlik` helps by providing a function to parse HTML (even not very well-formed) - `parse-dirty-xml` and defining a DSL to match DOM trees. The DSL expression is similar to a regex and it may be fed to `match-html` taht will find all the matching instances in the tree and extract the matching parts into a hash-table.
+Scraping data from the web page may be performed in arbitrary manner, yet `crawlik` helps by providing a function to parse HTML (even not very well-formed) - `parse-dirty-xml` and defining a DSL to match DOM trees. The DSL expression is similar to a regex and it may be fed to `match-html` that will find all the matching instances in the tree and extract the matching parts into a hash-table.
 
 The DSL syntax includes:
 
