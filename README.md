@@ -1,4 +1,4 @@
-# CRAWLIK is a Lisp web crawler and scrapper
+# CRAWLIK is a Lisp web crawler and scraper
 
 To use `crawlik`, you, basically, need to define methods:
 
@@ -7,17 +7,17 @@ To use `crawlik`, you, basically, need to define methods:
 
 ## CRAWLIK DSL
 
-Scraing data from the web page may be performed in arbitrary manner, yet `crawlik` helps by providing a function to parse HTML (even not very well-formed) - `parse-dirty-xml` and defining a DSL to match DOM trees. The DSL expression is similar to a regex and it may be fed to `match-html` taht will find all the matching instances in the tree and extract the matching parts into a hash-table.
+Scraping data from the web page may be performed in arbitrary manner, yet `crawlik` helps by providing a function to parse HTML (even not very well-formed) - `parse-dirty-xml` and defining a DSL to match DOM trees. The DSL expression is similar to a regex and it may be fed to `match-html` that will find all the matching instances in the tree and extract the matching parts into a hash-table.
 
 The DSL syntax includes:
 
 - regular matching at point: `*` matches any tag or a specific tag may be provided: `body`, `th`, etc.
 - `(tag attrs)` matches a tag with a certain set of attributes
-- `>>` does a DFS search in the current DOM subtree
+- `>>` does a Depth First Search (DFS) in the current DOM subtree
 - `$` specifies a part that should be saved in the resulting hash-table
-- `!!!` signals a complete match and allows to continue matching to find more than 1 instance
+- `!!!` signals a complete match and allows CRAWLIK to continue matching to find more than 1 instance
 
-A simple example: `(>>> table (tr (th) ((td :class "cell") ($ data)))` will match a table with a a row in which there will be a TH and TD of the class "cell" and all of the TD's contents will be saved to the key "data" in the result hash-table.
+A simple example: `(>>> table (tr (th) ((td :class "cell") ($ data)))` will match a table with a a row in which there will be a TH and TD of the class "cell" and all of the TD's contents will be saved to the key "data" in the resultant hash-table.
 
 
 ## Organizational notes
